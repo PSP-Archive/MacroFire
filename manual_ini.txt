@@ -1,0 +1,312 @@
+MacroFire 3.2.9
+
+目次
+=================================================
+
+  - 設定ファイルの書き方
+  - ボタン設定について
+  - macrofire.iniの検索パス
+  - 起動時に読み込まれる設定ファイルをゲームごとに切り変えるには
+  - 設定値の補完読み込み
+  - 設定値補完のために検索されるセクションの名前と順序
+  - 設定
+      - [Default]セクション
+      - [AlternativeButtons]セクション
+
+=================================================
+
+
+設定ファイルの書き方
+-------------------------------------------------
+  設定ファイルは1行が1つの設定に対応しており、
+  それぞれの行は以下のフォーマットで書き込まれます。
+
+    設定名 = 設定値
+
+  設定名および設定値の前後の空白は全て無視されます。
+
+  そしてこれらの設定はさらにセクションごとに別々に管理されます。
+  "["と"]"と囲まれた行がセクションの開始を示します。
+
+  これはWindowsで使われるINIファイルと同じフォーマットです。
+  従って、";"以降の文字列はコメントとして扱われます。
+
+
+ボタン設定について
+-------------------------------------------------
+  設定値の内容は、設定によって様々ですが、
+  単なる数値やON/OFF以外によく使っているものとして、ボタン設定があります。
+  これは、ボタンの組み合わせを設定する場合に使用されます。
+
+  それぞれのボタンは以下の表の名前と対応しており、
+  これらの名前をひとつ、あるいは「+」でつないで複数列挙します。
+  大文字小文字は区別しません。
+
+      ------------------------
+      ボタン名   | ボタン
+      ------------------------
+      Select     | セレクトボタン
+      Start      | スタートボタン
+      Up         | 十字キー上
+      Right      | 十字キー右
+      Down       | 十字キー下
+      Left       | 十字キー左
+      LTrigger   | Lボタン
+      RTrigger   | Rボタン
+      Triangle   | △ボタン
+      Circle     | ○ボタン
+      Cross      | ×ボタン
+      Square     | □ボタン
+      HOME       | HOMEボタン
+      NOTE       | ♪ボタン
+      SCREEN     | 輝度変更ボタン
+      VolUp      | 音量+ボタン
+      VolDown    | 音量-ボタン
+      AnalogUp   | アナログスティック上方向
+      AnalogRight| アナログスティック右方向
+      AnalogDown | アナログスティック下方向
+      AnalogLeft | アナログスティック左方向
+      RPlayPause | リモコンの再生/一時停止ボタン
+      RForward   | リモコンの早送りボタン
+      RBack      | リモコンの巻き戻しボタン
+      RVolUp     | リモコンの音量+ボタン
+      RVolDown   | リモコンの音量-ボタン
+      ------------------------
+
+  たとえば、スタートボタンとセレクトボタンの同時押しにする場合は
+
+      Start + Select
+
+  のように記述します。
+  また、単にボタン一つだけ、たとえば♪ボタンだけを設定する場合には、
+
+      NOTE
+
+  のように、単純に名前だけを記述します。
+
+  ちなみに、いないとは思いますが、
+
+      Left + Right
+      Up + Down
+      Up + Right + Down + Left
+
+  のような設定も可能です。
+  ですが、通常PSPの十字ボタンは押した方向と逆側の方向を同時に押すことはできませんので、
+  これは意味をなしません。
+
+  それどころか、このような設定をメニュー起動ボタンにしてしまうと、
+  その間メニューを表示できなくなりますのでご注意ください。
+  MacroFireは、このようなあり得ない設定値を修正しません。
+
+
+macrofire.iniの検索パス
+-------------------------------------------------
+  通常macrofire.iniはmacrofire.prxと同じフォルダ内から検索されますが、
+  例外として、macrofire.prxが内蔵フラッシュメモリから起動された場合に限り
+
+    ms0:/seplugins/macrofire.ini
+
+  を常に探しに行きます。
+
+
+起動時に読み込まれる設定ファイルをゲームごとに切り変えるには
+-------------------------------------------------
+  macrofire.iniにゲームIDのセクション名を記入し、そこに設定を書き込みます。
+  たとえば以下のように:
+  
+      [ULJM05325]
+      Startup = On
+      MenuButtons = VolUp + VolDown
+      ToggleButtons = NOTE
+      StatusNotification = Off
+      AnalogStickMovement = On
+      AnalogStickDeadzone = 40
+      AnalogStickSensitivity = 100
+      AnalogStickOriginX = 127
+      AnalogStickOriginY = 127
+      ForcedLowMemoryMode = Off
+      Remap = ms0:/macrofire/remap/analog_to_dpad.ini
+      Rapidfire = ms0:/macrofire/rapidfire/SOSE.ini
+      Macro1 = ms0:/macrofire/macro/SOSE/auto_creation_shippitsu.ini
+      Macro2 = ms0:/macrofire/macro/SOSE/auto_creation_art.ini
+  
+  このように設定することで、
+  ゲームIDがULJM-05325のゲームを起動したときのみこの設定値を使います。
+  
+  このゲームIDは、ゲームを起動した状態でMacroFireのメニューを表示させると、
+  最上部に表示されています。
+  
+  書き込めるエントリは、[Default]セクションと同じです。
+
+
+設定値の補完読み込み
+-------------------------------------------------
+  読み込み対象のセクションに、必要な設定値がすべて書き込まれていない場合、
+  MacroFireは、より下位のセクションからそれらの設定値を補完します。
+  例えば、
+    
+      [ULJM05325]
+      Startup = On
+      StatusNotification = On
+
+  と設定された場合、そのほかのアナログスティック設定などの数々の設定値は、
+  順番に以下のセクションから補完されます。
+
+      [ULJM05325]
+        ↓
+      [GAME]
+        ↓
+      [Default]
+
+  [Default]セクションまで、一度も出現しなかった、いわば「欠けている設定値」に関しては、
+  MacroFireが内部で持っている初期値を使用します。
+
+
+設定値補完のために検索されるセクションの名前と順序
+-------------------------------------------------
+  XMB:
+    [VSH] -> [Default]
+
+  POPS:
+    [<ゲームID (SLPS10000など)>] -> [POPS] -> [Default]
+
+  GAME(UMD):
+    [<ゲームID (ULJM10000など)>] -> [GAME] -> [Default]
+
+  GAME(自作ソフト):
+    [<8文字のID (自作ソフトの実行ファイルから算出されるハッシュ値の一部)>] -> [GAME] -> [Default]
+
+
+設定
+-------------------------------------------------
+  設定可能な設定名と設定値、およびその詳細を紹介します。
+
+  [Default]セクション
+  -----------------------------------------------
+    Startup
+      設定値: On | Off
+
+      起動時にMacroFire Engineを有効にするかどうかを設定します。
+        OFF : 起動時に有効状態にしない。
+        ON  : 起動時に有効状態にする。
+
+    MenuButtons
+      設定値: ボタン設定
+
+      デフォルトのButtons to launch the menuを設定します。
+      詳細はreadme.txt参照。
+
+    ToggleButtons
+      設定値: ボタン設定
+
+      デフォルトのButtons to toggle the engine stateを設定します。
+      詳細はreadme.txt参照。
+
+    StatusNotification
+      設定値: On | Off
+
+      デフォルトのStatus notificationを設定します。
+      詳細はreadme.txt参照。
+
+    AnalogStickMovement
+      設定値: On | Off
+
+      デフォルトのAnalog stick movementを設定します。
+      詳細はmanual_analogsens.txt参照。
+
+    AnalogStickDeadzone
+      設定値: 0-182の数値
+
+      デフォルトのDeadzone radiusを設定します。
+      詳細はmanual_analogsens.txt参照。
+
+    AnalogStickSensitivity
+      設定値: 0-200の数値
+
+      デフォルトのSensitivityを設定します。
+      詳細はmanual_analogsens.txt参照。
+
+    AnalogStickOriginX
+      設定値: 0-255の数値
+
+      デフォルトのOrigin X-coordinateを設定します。
+      詳細はmanual_analogsens.txt参照。
+
+    AnalogStickOriginY
+      設定値: 0-255の数値
+
+      デフォルトのOrigin Y-coordinateを設定します。
+      詳細はmanual_analogsens.txt参照。
+
+    ForcedLowMemoryMode
+      設定値: On | Off
+
+      メニュー表示用のフレームバッファを確保することを禁止します。
+      通常、メモリが少ないときに自動で有効になる「Low Memory Mode」を強制します。
+      フレームバッファは、安全に使用できるはずのメモリから確保しているので、ほとんどの場合Offでも問題ないはずですが、
+      希にメニューを表示、あるいは終了した時にフリーズするソフトがあるようで、
+      その場合はこれをOnにすると解決する可能性があります。
+      ただし、メニュー上での操作性は低下します。
+
+    Remap
+      設定値: ファイルパス(ms0:/...)
+
+      起動時に読み込ませるボタン再割り当て設定ファイルを指定します。
+      「ms0:/」からのフルパスで記述してください。
+
+    Rapidfire
+      設定値: ファイルパス(ms0:/...)
+
+      起動時に読み込ませる連射設定ファイルを指定します。
+      「ms0:/」からのフルパスで記述してください。
+
+    Macro1
+      設定値: ファイルパス(ms0:/...)
+
+      起動時に読み込ませるマクロファイルを指定します。
+      「ms0:/」からのフルパスで記述してください。
+
+      この設定値はMacro2、Macro3...と数値を上げていくことで、いくつでも設定できます。
+      ただし、数値が連続していなければなりません。
+      例えば、
+          Macro1 = ms0:/...
+          Macro2 = ms0:/...
+          Macro3 = ms0:/...
+          Macro5 = ms0:/...
+      このように設定された場合、
+      Macro4が存在しないため、MacroFireはMacro3までしか設定されていないと誤認しMacro5は読み込まれません。
+
+  [AlternativeButtons]セクション
+  -----------------------------------------------
+    Select
+    Start
+    Up
+    Right
+    Down
+    Left
+    Ltrigger
+    Rtrigger
+    Triangle
+    Circle
+    Cross
+    Square
+    Home
+      設定値: ボタン設定
+
+      MacroFireのメニューの中でのみ機能する代替ボタンの設定です。
+      壊れたボタンをカバーするのが主な目的です。
+      この設定でメニューを操作可能にすることで、Remap settingsを行えるようにします。
+
+      上記のボタンに対して代替ボタンを設定します。
+      設定値が空の場合は代替ボタンは設定されず、そのままボタン名通りのボタンを使います。
+
+      例えば、スタートボタンが壊れていて反応しないなどの理由により
+      スタートボタンを代替ボタンを設定したい場合は、
+      Startエントリにのみ、代替ボタンにしたいボタンの組み合わせを設定します。
+
+        Start = LTrigger + RTrigger + Select
+
+
+-------------------------------------------------
+pen@ClassG
+http://classg.sytes.net

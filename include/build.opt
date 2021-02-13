@@ -1,0 +1,11 @@
+CFLAGS  ?= -Os -G0 -Wall -fno-strict-aliasing
+ASFLAGS ?= $(CFLAGS)
+LDFLAGS ?= 
+
+ifdef WITH_LIBS_DEBUG
+	CFLAGS += -fno-builtin-printf -g -DDEBUG=1
+endif
+
+ifdef USE_KERNEL_LIBC
+	CFLAGS += -DPSP_USE_KERNEL_LIBC
+endif

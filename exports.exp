@@ -1,0 +1,20 @@
+# PRXが外部へエクスポートする関数や変数一覧？
+PSP_BEGIN_EXPORTS
+
+# 0x8000はsyslibにおける特別なケース？
+# module_startとmodule_infoのエクスポートは義務らしい。
+# module_stopを追加することも出来ると書かれていたが、
+# 実際にはエクスポートしても呼ばれないようだ？
+PSP_EXPORT_START(syslib, 0, 0x8000)
+PSP_EXPORT_FUNC(module_start)
+PSP_EXPORT_FUNC(module_stop)
+PSP_EXPORT_VAR(module_info)
+PSP_EXPORT_END
+
+# 自身はなにもエクスポートしない。
+# カーネルモードPRXからエクスポートする場合は0x4001？
+# ユーザモードPRXからエクスポートする場合は0x0001？
+PSP_EXPORT_START(MacroFire, 0, 0x4001)
+PSP_EXPORT_END
+
+PSP_END_EXPORTS
